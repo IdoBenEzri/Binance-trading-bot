@@ -11,9 +11,9 @@ messages in a Telegram group,
 1. Install PosgreSQL and create a server and a database.
 
 2. Lbraries to install using pip:
-       - pip install python-binance (to integrate with Binance as client)
-       - pip install psycopg2 (to integrate with a PosgreSQL Database)
-       - pip install python-telegram-bot (to Update the owner inreal time using Telegram chat)
+              - pip install python-binance (to integrate with Binance as client)
+              - pip install psycopg2 (to integrate with a PosgreSQL Database)
+              - pip install python-telegram-bot (to Update the owner inreal time using Telegram chat)
   
 
 # User Configuration
