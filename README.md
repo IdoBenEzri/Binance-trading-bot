@@ -1,8 +1,6 @@
-# Binance-Trading-Bot-Documentation
-Binance trading bot - Skeleton of my trading bot 
+# Binance-Trading-Bot-Documentation 
 
-
-# About
+## About
 Binance is a crypto coins live market, using Binance API 
 and the Python language, I developed a live trading bot that trade automatically 
 and update the user whenever a given trading scenario occurred using 
@@ -15,7 +13,7 @@ You can find the DatabaseManager and the AccountManager classes more extendedtly
 
 
 
-# Invorement Setup
+## Invorement Setup
 1. Install PosgreSQL and create a server and a database.
 2. Libraries to install using pip:
   -   pip install python-binance (to integrate with Binance as client)
@@ -23,12 +21,12 @@ You can find the DatabaseManager and the AccountManager classes more extendedtly
   -   pip install python-telegram-bot (to update the user in real-time using Telegram chat)
   
 
-# User Configuration
+## User Configuration
 Before we start trading, first the bot need to be configured to one's Binance account, TelegramBot and PosgreSQL database.
 In order to make the configuration a little bit easier, you can use "config.py", the configuration file in this repository which contains all the information that need to be configured (TelegramBot bot token, Binance API KEY and API SECRET, etc.).
 
 
-# Database - Explanation & Building
+## Database - Explanation & Building
 Explanation:
 
 You can work with your own database and not use DatabaseManager.py in this repository, but I decided to provide a DatabaseManager Class that help you evoid much of the work, however this class is currently configured to work with my own platform of database, so here is an explaination about my database:
@@ -53,7 +51,7 @@ Simply run DatabaseBuilder.py
 
 __NOTICE__ - you should to run  DatabaseBuilder.py only a after you complete "Invorement Setup" and "User Configuration".
 
-# Class DataBaseManager - Helper for handling the bot-Database interface:
+## Class DataBaseManager - Helper for handling the bot-Database interface:
 
 __Methods:__
 
@@ -131,7 +129,7 @@ __Methods:__
   Class destructur, close the connection for the DatabaseManager.  
   
   
-# Class AccountManager - helper for handling the bot-Binance interface: 
+## Class AccountManager - helper for handling the bot-Binance interface: 
 
   __Methods:__
 
@@ -169,7 +167,7 @@ __Methods:__
   
   Method try to buy the maximum quantity possible considering user current USDT balance, return True if succeded, False otherwise. 
   
-# Other helper methods - Statistic.py
+## Other helper methods - Statistic.py
 __Methods:__
 - get_win_ratio(coin)
 
@@ -185,14 +183,14 @@ __Methods:__
   
   Method return 1 if a coin has good win/lose ratio, 0 if not. Good ratio is set to be the given argument "ratio".
   
-# Other helper methods - Tools.py
+## Other helper methods - Tools.py
 __Methods:__
 - get_date(timestamp):
 
   Arguments - timestamp
   
   Method returns a String contains the excat date of the given argument "timestamp".
-# TelegramBot.py 
+## TelegramBot.py 
  __Methods:__
   
   telegram_bot_sendtesxt(bot_message,chat_id):
@@ -201,7 +199,7 @@ __Methods:__
   
   Method send a given telegram message to a given chat id. 
   
-# Bot.py - Main file
+## Bot.py - Main file
  __Methods:__ 
 - on_open(ws):
  
