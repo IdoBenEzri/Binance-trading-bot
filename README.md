@@ -13,7 +13,7 @@ You can find the DatabaseManager and the AccountManager classes more extendedtly
 
 
 
-## enviroement Setup
+## Enviroement Setup
 1. Install PosgreSQL and create a server and a database.
 2. Libraries to install using pip:
   -   pip install python-binance (to integrate with Binance as client)
