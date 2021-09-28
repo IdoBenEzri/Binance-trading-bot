@@ -1,14 +1,10 @@
 import time
 from Config import *
-import DataBaseManager
+import DatabaseManager
 
-def getDate(timestamp):
-    t = timestamp/1000
-    humantime= time.ctime(t)
-    return humantime
 
-def getWinRatio(coin):
-    dbm=DataBaseManager() 
+def get_win_ratio(coin):
+    dbm=DatabaseManager.DatabaseManager
     dbm.cur.execute("SELECT count(id) FROM orders WHERE coin LIKE %s  AND purchasevalue>sellvalue AND sellvalue>0",(coin,))
     alll=dbm.cur.fetchone()
     dbm.cur.execute("SELECT count(id) FROM orders WHERE coin LIKE %s  AND purchasevalue<sellvalue AND sellvalue>0",(coin,))  
@@ -19,9 +15,9 @@ def getWinRatio(coin):
     return[wins,loses]  
 
 
-def isGoodRatio(coin,ratio):
+def is_good_ratio(coin,ratio):
   name=str(coin)
-  rates=getWinRatio(name)
+  rates=get_win_ratio(name)
   wins=rates[0]
   loses=rates[1]
   if loses*ratio<=wins:

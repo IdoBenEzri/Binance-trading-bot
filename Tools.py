@@ -6,7 +6,4 @@ def get_date(timestamp):
     return humantime
 
 
-def getPercant(x,y):
-    if x and y:
-        return (x/y)*100
-    return None    
+ 

@@ -6,15 +6,42 @@ from binance.enums import *
 from Tools import *
 
 
-class DataBaseManager():
+class DatabaseManager():
+    
       
   def __init__(self):
     self.conn = psycopg2.connect(dbname=DB_NAME,user=DB_USER,password=DB_PASS,host=DB_HOST)
     self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-     
-  def save_candle(self,coin,value,time,highest,lowest):
-    self.cur.execute("INSERT INTO "+coin+" VALUES(%s,%s,%s,%s)",(value,time,highest,lowest))  
+  
+
+  def build_database(self):
+    for coin in coins:
+      self.cur.execute("CREATE TABLE"+coin+"usdt(closevalue DECIMAL, closetime DECIMAL PRIMARY KEY, DECIMAL highest, DECIMAL lowest)")    
+      self.conn.commit()
+    self.cur.execute("CREATE TABLE orders(id  SERIAL PRIMARY KEY , coin VARCHAR,purchasevalue DECIMAL, purchasetime DECIMAL, sellvalue DECIMAL,selltime DECIMAL)")  
+    self.conn.commit()
+    self.cur.execute("CREATE TABLE currentlytrading(coin VARCHAR PRIMARY KEY,purchasevalue DECIMAL, purchasetime DECIMAL)")  
+    self.conn.commit()
+
+
+  def save_buy(self,coin,value,time):
+    self.cur.execute("INSERT INTO orders VALUES(%s,%s,%s,%s,%s)",(coin,value,time,0,0))  
     self.conn.commit() 
+    self.cur.execute("INSERT INTO currentlytrading VALUES(%s,%s,%s)",(coin,value,time))  
+    self.conn.commit()
+
+
+  def save_sell(self,coin,buy_value,buy_time,sell_value,sell_time):
+    self.cur.execute("INSERT INTO orders VALUES(,%s,%s,%s,%s,%s)",(coin,buy_value,buy_time,sell_value,sell_time))  
+    self.conn.commit()
+    self.cur.execute(f"DELETE FROM curentlytrading WHERE coin={coin}")
+    self.conn.commit()
+
+
+  def save_candle(self,coin,close_value,close_time,highest,lowest):
+    self.cur.execute("INSERT INTO "+coin+" VALUES(%s,%s,%s,%s)",(close_value,close_time,highest,lowest))  
+    self.conn.commit() 
+
 
   def get_last_candle(self,coin):
     self.cur.execute("SELECT max(msgtime) FROM "+coin+"") 
@@ -22,6 +49,7 @@ class DataBaseManager():
     if not last_candle or not last_candle[0]:
       return 0
     return last_candle[0]
+
 
   def print_last_candles(self):          
     for coin in coins:
@@ -71,6 +99,12 @@ class DataBaseManager():
       return 0 
 
 
+  def get_close_Value(self,coin,timestamp):
+      self.cur.execute("SELECT value FROM "+coin+" WHERE msgtime < '%s' AND msgtime> '%s'",(timestamp+(5*minute),timestamp-(5*minute))) 
+      value=self.cur.fetchone()
+      if value:
+          return value[0]
+      return None
 
 
   def is_trading(self,coin):  
@@ -92,16 +126,8 @@ class DataBaseManager():
       self.conn.commit() 
 
 
-  def get_close_Value(self,coin,timestamp):
-      self.cur.execute("SELECT value FROM "+coin+" WHERE msgtime < '%s' AND msgtime> '%s'",(timestamp+(5*minute),timestamp-(5*minute))) 
-      value=self.cur.fetchone()
-      if value:
-          return value[0]
-      return None
 
-
-
-  def fillHistory(self,coin,start=None): 
+  def fill_history(self,coin,start=None): 
       client = Client(API_KEY,API_SECRET)
       name=str.upper(coin)+"USDT"
       try:
@@ -123,31 +149,14 @@ class DataBaseManager():
           print(f"Coin -{name}- errored.") 
 
 
-  def print_last_candles(self):          
-    for coin in coins:
-      name=str(coin).upper()+"USDT"     
-      last_candle=self.get_last_candle(name)
-      d=get_date(last_candle)
-      print(f"Coin - {coin} \t{d}\t{last_candle}")
-
-  def deleteHistory(self,coin,start=None):
-    name=str.upper(coin)+"USDT"
-    #start=1631024100000-(2*minute)
-    if not start:
-      self.cur.execute("DELETE FROM "+name+"")
-      self.conn.commit()
-    else:
-      self.cur.execute("DELETE FROM "+name+" WHERE msgtime >%s",(start,))
-      self.conn.commit() 
-
-
-  def RepairHistory(self):
+  def Repair_history(self):
     print("Deleting old history...")
     for coin in coins:
-      self.deleteHistory(coin)
+      self.delete_history(coin)
     print("Old history deleted,re-filling history:")   
     for coin in coins:
-      self.fillHistory(coin)
+      self.fill_history(coin)
+
 
   def  __del__(self):
     self.cur.close()

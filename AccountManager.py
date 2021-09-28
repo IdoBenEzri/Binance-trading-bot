@@ -8,12 +8,12 @@ import math
 class AccountManager(): 
   def __init__(self):
       client = Client(API_KEY,API_SECRET)
+        
 
-
-  def order(self,side, quantity, symbol,order_type=ORDER_TYPE_MARKET):
+  def order(self,side, quantity, symbol):
     try:
       print("sending order")
-      order = self.client.create_order(symbol=symbol, side=side, type=order_type, quantity=quantity)
+      order = self.client.create_order(symbol=symbol, side=side, type=ORDER_TYPE_MARKET, quantity=quantity)
       print(order)
     except Exception as e:
       print("an exception occured - {}".format(e))
@@ -38,7 +38,7 @@ class AccountManager():
   def sell_coin(self,symbol):
     balance=math.floor(float(self.get_coin_balance(symbol)))
     print(f"!! selling coin - {symbol} our balance - {balance} ")    
-    flag =self.order(side=SIDE_SELL,quantity=balance,symbol=symbol,order_type=ORDER_TYPE_MARKET)
+    flag =self.order(side=SIDE_SELL,quantity=balance,symbol=symbol)
     print(f"flag ={flag}")
     return flag
 
