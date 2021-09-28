@@ -244,5 +244,5 @@ __Methods:__
    
    Method returns a string present the full url request to open binance websocket for the given coin and given interval.
    
-   __Finally - after applying your buying/selling algoritms   you can your own  Binance trading bot! simply run bot.py, I recommend to use the "repair_history" method (under DatabaseManager Class)   from time to time.__
+   __Finally - after applying your buying/selling algoritms   you can enjoy your own  Binance trading bot! simply run bot.py, I recommend to use the "repair_history" method (under DatabaseManager Class)   from time to time.__
    
