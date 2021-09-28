@@ -82,14 +82,6 @@ class DataBaseManager():
 
 
 
-  def is_suspended(self,coin):
-    self.cur.execute("SELECT * FROM suspended WHERE coin LIKE %s",(coin,))
-    suspended=self.cur.fetchone()  
-    if suspended: 
-      return suspended
-    return None
-
-
   def delete_history(self,coin,start=None):
     name=str.upper(coin)+"USDT"
     if not start:
