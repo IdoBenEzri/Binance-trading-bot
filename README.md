@@ -1,19 +1,19 @@
 # Binance-Trading-Bot-Documentation 
 
 ## About
-Binance is a crypto coins live market, using Binance API 
+Binance is crypto coins live market, using Binance API 
 and the Python language, I developed a live trading bot that trade automatically 
 and update the user whenever a given trading scenario occurred using 
 messages in a Telegram group,
 
 __how it works:__
 using DatabaseManager, which is a class that I wrote to take care of the bot-database interface, and using AccountManager, which is a Class that I wrote to take care of the 
-bot-Binance interface, the bot constantly scanning crypto coins prices using websockets and use his database saved data to take a decision by its own in real-time using given (yours) trading algoritm.
+bot-Binance interface, the bot constantly scanning crypto coins prices using websockets and use his database saved data to take a decision by its own in real-time using given (yours) trading algorithm.
 You can find the DatabaseManager and the AccountManager classes more extendedtly later in this document.
 
 
 
-## Enviroement Setup
+## Environment Setup
 1. Install PosgreSQL and create a server and a database.
 2. Libraries to install using pip:
   -   pip install python-binance (to integrate with Binance as client)
@@ -22,34 +22,34 @@ You can find the DatabaseManager and the AccountManager classes more extendedtly
   
 
 ## User Configuration
-Before we start trading, first the bot need to be configured to one's Binance account, TelegramBot and PosgreSQL database.
-In order to make the configuration a little bit easier, you can use "config.py", the configuration file in this repository which contains all the information that need to be configured (TelegramBot bot token, Binance API KEY and API SECRET, etc.).
+Before we start trading, first the bot needs to be configured to one's Binance account, TelegramBot and PosgreSQL database.
+To make the configuration a little bit easier, you can use "config.py", the configuration file in this repository which contains all the information that need to be configured (TelegramBot bot token, Binance API KEY and API SECRET, etc.).
 
 
 ## Database - Explanation & Building
 Explanation:
 
-You can work with your own database and not use DatabaseManager.py in this repository, but I decided to provide a DatabaseManager Class that help you evoid much of the work, however this class is currently configured to work with my own platform of database, so here is an explaination about my database:
+You can work with your own database and not use DatabaseManager.py in this repository, but I decided to provide a DatabaseManager Class that help you avoid much of the work, however this class is currently configured to work with my own platform of database, so here is an explanation about my database:
 
 My default database contains a table for every coin that you wish to trade (edit your coin list in config.py), 
-trading with USDT (crypto coin that represant USD).
+trading with USDT (crypto coin that represent USD).
 
 Every table contains history of a certain coin trading candlesticks, for every row in the table (that represent a certain candlestick)  we will save the close price, close time, highest price in the candlestick and lowest price in the candlestick.
 Two more important tables in this database are  the "orders" table and the "currently trading" table:
 - the order table:
   the orders table is a table that contain information about the bot orders - buying and selling, 
-  for every row in this table (that represant an order) we will save the order serial number (auto generated), name of the coin, buying price, buying time, sell price and 
+  for every row in this table (that represent an order) we will save the order serial number (auto generated), name of the coin, buying price, buying time, sell price and 
   sell time (for buying order, sell price and sell time are set to 0 by default).
   
 - the currently trading table:
-  this table contains all the coins we are currently trading (those we baught but didn't sell yet), 
+  this table contains all the coins we are currently trading (those we bought but didn't sell yet), 
   for every row in this table we will save the coin name, the buying price and   the buying time. 
 
 How to build default database:
 
 Simply run DatabaseBuilder.py 
 
-__NOTICE__ - you should to run  DatabaseBuilder.py only a after you complete "Invorement Setup" and "User Configuration".
+__NOTICE__ - you should to run  DatabaseBuilder.py only a after you complete "Environment Setup" and "User Configuration".
 
 ## Class DataBaseManager - Helper for handling the bot-Database interface:
 
@@ -57,26 +57,26 @@ __Methods:__
 
 - __init__( self ) - Builder, initiate a new DatabaseManager, method open a connection with your PosgreSQL database.
 
-- build_database ( self ) - Method builds the defauld database.
+- build_database ( self ) - Method builds the default database.
 
 - save_buy( self, coin, value,time ) -
 
   Arguments - string "coin" set to coin name written in this format "BTCUSDT", float "value" represents the buying value, 
   int "time" represent a timestamp set to the candle starting time.
   
-  Method save a new buy order in the "orders" table (with sell time and sell value sets to 0 by default) and in the currently trading table.
+  Method saves a new buy order in the "orders" table (with sell time and sell value sets to 0 by default) and in the currently trading table.
   
 - save_sell(self, coin, buy_value, buy_time, sell_value, sell_time)
 
   Arguments- string "coin" set to coin name written in this format "BTCUSDT", int "buy_value", int "buy_time", int "sell_value", int "sell_time".
   
-  Method save a new sell order in the "orders table" and remove the order from the currently trading table.
+  Method saves a new sell order in the "orders table" and remove the order from the currently trading table.
   
 - save_candle(self, coin, close_value, close_time, highest, lowest)
 
-  Arguments - string "coin" set to coin name written in this format "BTCUSDT", floats "close_value","higest","lowest" which rerepresents the candlestick close/highest/lowest       price, int "close_time" rerepresent the candle close time.
+  Arguments - string "coin" set to coin name written in this format "BTCUSDT", floats "close_value","higest","lowest" which represents the candlestick close/highest/lowest       price, int "close_time" represent the candle close time.
   
-  Method save a new candlestick in the database.
+  Method saves a new candlestick in the database.
   
 - get_last_candle(self, coin):
 
@@ -94,7 +94,7 @@ __Methods:__
   
 - get_highest(self, coin, start, end):
 
-  Arguments - string coin set to a coin name written in this format "BTCUSDT", int start,end rerepresents timstamps to your starting time and ending time.
+  Arguments - string coin set to a coin name written in this format "BTCUSDT", int start,end represents timstamps to your starting time and ending time.
   
   Method returns the highest price the coin ever was between the given start and end times.
   
@@ -116,7 +116,7 @@ __Methods:__
   
 - fill_history(self,coin,start):
 
-  Arguments - string "coin" set to a coin name written in this format "BTCUSDT", *optional* - int "start" represent a timestamp of the earliest candlestick to add,defauld to 300   days otherwise.
+  Arguments - string "coin" set to a coin name written in this format "BTCUSDT", *optional* - int "start" represent a timestamp of the earliest candlestick to add,default to 300   days otherwise.
   
   Method fill candlesticks history for a certain coin.
   
@@ -126,7 +126,7 @@ __Methods:__
   
 - __del__(self):
 - 
-  Class destructur, close the connection for the DatabaseManager.  
+  Class destructor, close the connection for the DatabaseManager.  
   
   
 ## Class AccountManager - helper for handling the bot-Binance interface: 
@@ -137,7 +137,7 @@ __Methods:__
 
 - order(self,side,quantity,symbol):
 
-  Arguments - string "side" prepresent the side of the order, int quantity represent the quantity of coins to relate, string "symbol" set to a coin name written in this format "BTCUSDT".
+  Arguments - string "side" represent the side of the order, int quantity represent the quantity of coins to relate, string "symbol" set to a coin name written in this format "BTCUSDT".
   
  Method send a market order request to binance to buy/sell given quantity of a given coin.
  
@@ -153,19 +153,19 @@ __Methods:__
   
   Method returns the max quantity the user can buy of a coin.
   
-  (taking caution step of leaving 4 dollars in the USDT balance to evoid over-quantity misscalculations.)
+  (taking caution step of leaving 4 dollars in the USDT balance to avoid over-quantity misscalculations.)
   
 - sell_coin(self,symbol): 
 
   Arguments - string "symbol" set to a coin name written in this format "BTCUSDT" or to "USDT"
   
-  Method try to sell all user balance in a given coin, return True if succeded, False otherwise. 
+  Method try to sell all user balance in a given coin, return True if succeeded, False otherwise. 
   
 - buy_coin(self,symbol,price):
 
   Arguments - string "symbol" set to a coin name written in this format "BTCUSDT" , float "price" float "price" set to a coin certain price(trading with USDT).
   
-  Method try to buy the maximum quantity possible considering user current USDT balance, return True if succeded, False otherwise. 
+  Method try to buy the maximum quantity possible considering user current USDT balance, return True if succeeded, False otherwise. 
   
 ## Other helper methods - Statistic.py
 __Methods:__
@@ -173,8 +173,8 @@ __Methods:__
 
   Arguments -  string "coin" set to a coin name written in this format "BTCUSDT". 
   
-  Method returns  a list of two integers represeting the wins and the loses trades the bot has with the given coin.
-  (win/lose is depended on either we sold in a better price then we baught or not)
+  Method returns  a list of two integers representing the wins and the loses trades the bot has with the given coin.
+  (win/lose is depended on either we sold in a better price then we bought or not)
    
 - is_good_ratio(coin,ratio):
   
@@ -189,7 +189,7 @@ __Methods:__
 
   Arguments - timestamp
   
-  Method returns a String contains the excat date of the given argument "timestamp".
+  Method returns a String contains the exact date of the given argument "timestamp".
 ## TelegramBot.py 
  __Methods:__
   
@@ -205,20 +205,20 @@ __Methods:__
  
  Arguments - Websocket ws 
  
- Method print that websocket connection opened.
+ Method prints that websocket connection opened.
  
 - on_close(ws):
 - 
   Arguments - Websocket ws 
   
-  Method print that websocket connection closed.
+  Method prints that websocket connection closed.
   
 - on_message(ws, message):  
   
-  Arguments - Websocket "ws", webseocket recieved message "message" 
+  Arguments - Websocket "ws", webseocket received message "message" 
     
-  Method recieves any update about a coin price change directly from Binance, saving whenever a candlestick closed in the user PosgreSQL database, 
-  checks if we currently trading the coin we recieved update on, if we are - method activate the method - "need_to_sell_check",
+  Method receives any update about a coin price change directly from Binance, saving whenever a candlestick closed in the user PosgreSQL database, 
+  checks if we currently trading the coin we received update on, if we are - method activate the method - "need_to_sell_check",
   else method activate the method  "need_to_buy_check".
  
 -  need_to_buy_check(coin,time,currvalue):
@@ -226,16 +226,16 @@ __Methods:__
     Arguments - string "coin" set to a coin name written in this format "BTCUSDT",
     int "time" which is a timestamp, float "currvalue" presents the current price of the given     coin   in USDT.
   
-    Method recieving message about a coin price change from method "on_message", and applying User buying algoritm.  
-    __This function is not fullfilled, I left it open for any User to develop his own buying algoritm, I recommend you to use the AccountnManager and DatabaseManager Classes to     make the interface with Binance and with your database easier.__
+    Method receives a message about a coin price change from method "on_message" and applying User buying algorithm.  
+    __This function is not fullfilled, I left it open for any User to develop his own buying algorithm, I recommend you to use the AccountnManager and DatabaseManager Classes to     make the interface with Binance and with your database easier.__
   
 - need_to_sell_check(coin,value,msgtime,purchasevalue,purchasetime):
 
-  Arguments - string "coin" set to a coin name written in this format "BTCUSDT", float "value" presents the current price of the given coin  in USDT. int "msgtime" sets to the     current candlestick open time, float "purchasevalue" presents the buying price of the current trade, int "purchasetime" presentst the buying time.
+  Arguments - string "coin" set to a coin name written in this format "BTCUSDT", float "value" presents the current price of the given coin  in USDT. int "msgtime" sets to the     current candlestick open time, float "purchasevalue" presents the buying price of the current trade, int "purchasetime" presents the buying time.
   
-  Method recieving message about a coin price change from method "on_message", and applying User sellig algoritm (activated only for coins the user currently trading).
+  Method receives a message about a coin price change from method "on_message", and applying User selling algorithm (activated only for coins the user currently trading).
   
-   __This function is not fullfilled, I left it open for any User to develop his own selling algoritm, I recommend you to use the AccountnManager and DatabaseManager Classes to       make the interface with Binance and with your database easier.__
+   __This function is not fullfilled, I left it open for any User to develop his own selling algorithm, I recommend you to use the AccountnManager and DatabaseManager Classes to       make the interface with Binance and with your database easier.__
    
 - start_listen():
    Method use the module websocket, creates a websocket and runs it.
@@ -246,5 +246,5 @@ __Methods:__
    
    Method returns a string present the full url request to open binance websocket for the given coin and given interval.
    
-   __Finally - after applying your buying/selling algoritms   you can enjoy your own  Binance trading bot! simply run bot.py, I recommend to use the "repair_history" method (under DatabaseManager Class)   from time to time.__
+   __Finally - after applying your buying/selling algorithm   you can enjoy your own  Binance trading bot! simply run bot.py, I recommend to use the "repair_history" method (under DatabaseManager Class)   from time to time.__
    
