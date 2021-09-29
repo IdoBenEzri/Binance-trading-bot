@@ -90,7 +90,7 @@ __Methods:__
   
 - print_orders(self):
 
-  Method prints all the completed orders in the orders table (which are completed trades), indicating the coin name, the total hours we've been in this trade, the buying time,     the buying price, the sell time and the sell price, representing good trades first (those trades which we sold in a higher price than the price we buaght).
+  Method prints all the completed orders in the orders table (which are completed trades), indicating the coin name, the total hours we've been in this trade, the buying time,     the buying price, the sell time and the sell price, presenting good trades first (those trades which we sold in a higher price than the price we buaght).
   
 - get_highest(self, coin, start, end):
 
@@ -234,7 +234,9 @@ __Methods:__
   Arguments - string "coin" set to a coin name written in this format "BTCUSDT", float "value" presents the current price of the given coin  in USDT. int "msgtime" sets to the     current candlestick open time, float "purchasevalue" presents the buying price of the current trade, int "purchasetime" presentst the buying time.
   
   Method recieving message about a coin price change from method "on_message", and applying User sellig algoritm (activated only for coins the user currently trading).
- 
+  
+   __This function is not fullfilled, I left it open for any User to develop his own selling algoritm, I recommend you to use the AccountnManager and DatabaseManager Classes to       make the interface with Binance and with your database easier.__
+   
 - start_listen():
    Method use the module websocket, creates a websocket and runs it.
    
