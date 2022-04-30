@@ -5,7 +5,7 @@ from Config import *
 from threading import *
 from binance.enums import *
 import TelegramBot
-import DatabaseManager 
+import DataBaseManager 
 from Tools import *
 BASESOCKET = "wss://stream.binance.com:9443/ws/"  
 SOCKET=""
@@ -21,15 +21,17 @@ def on_close(ws):
  
 
 
-def need_to_buy_check(coin,time,currvalue):   
+def need_to_buy_check(coin,time,currvalue): 
+  acm = AccountManager() #  initiate account manager - helper with the bot-binance integration, for example to  get balance or to create new buy order with the binance account.
   print("Checking if need to buy -\n Coin - {coin}\tcurrent value - {currvalue}$\tTimestamp -{time} ")
-  ## Write Your buy order logic here, I recommend you to use the AccountnManager and DatabaseManager Classes to     make the interface with Binance and with your database easier.
+  ## Write Your buy order logic here.
    
 
 
 def need_to_sell_check(coin,value,msgtime,purchasevalue,purchasetime): 
+  acm = AccountManager() #  initiate account manager - helper with the bot-binance integration, for example to  get balance or to create new sell order with the binance account.  
   print("Checking if need to sell Coin - {coin}\tPurchase value - {purchasevalue}\tPurchase time - {time}")              
-  ## Write your sell order logic here,  I recommend you to use the AccountnManager and DatabaseManager Classes to     make the interface with Binance and with your database easier.
+  ## Write your sell order logic here.
   
 
 
@@ -38,19 +40,20 @@ def on_message(ws, message):
     candle = json_message['k']
     is_candle_closed = candle['x']
     value = candle['c']
-    cointype= candle['s']
+    coin= candle['s']
     time = candle['t']
     highest=candle['h']
     lowest=candle['l']
-    dbm=DatabaseManager.DatabaseManager
-    currtrading=dbm.is_trading(cointype)
-    #print(f"UPDATE: coin:{cointype}\ttime:{date}\t value={value}")
+    dbm=DataBaseManager()
+    currtrading=dbm.is_trading(coin) # boolean check if we currently trading this coin
+    suspended=dbm.is_suspended(coin) # boolean check if we are want to trade this coin
+    #print(f"UPDATE: coin:{coin}\ttime:{date}\t value={value}")
     if is_candle_closed: #candle closed scenario
-      dbm.save_candle(cointype,value,time,highest,lowest)              
-    elif currtrading:
-      need_to_sell_check(cointype,time,value,currtrading[1],currtrading[2])
-    else:   
-      need_to_buy_check(cointype,value,time) 
+      dbm.save_candle(coin,value,time,highest,lowest)              
+    if currtrading:
+      need_to_sell_check(coin,time,value,currtrading[1],currtrading[2])
+    elif not suspended:   
+      need_to_buy_check(coin,value,time) 
 
 
 
@@ -60,7 +63,7 @@ def start_listen():
     ws1.run_forever()
 
 
-def get_socket_value(coin,interval): 
+def getSOCKETValue(coin,interval): 
     SOCKET=""
     SOCKET +=  BASESOCKET + coin + "usdt@kline_" + interval
     return SOCKET
@@ -69,9 +72,9 @@ def get_socket_value(coin,interval):
 
 for coin in coins:
   t=Thread(target=start_listen)
-  SOCKET=get_socket_value(coin,"1d")
+  SOCKET=getSOCKETValue(coin,"1d")
   t.start()
-  
+  time.sleep(0.5)
 
 
 
